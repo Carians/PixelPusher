@@ -1,31 +1,37 @@
 import discord
-import engine as cmd
+from discord.ext import commands
+from engine import commands as cmd
 
 # Settings
-DEBUG = False
-LOGGING = False
-LOGGING_LEVEL = 'INFO'
+DEBUG = True
 
 # Discord
 DISCORD_TOKEN = 'YOUR_TOKEN'
-class DiscordBot:
+class DiscordBot(discord.Client):
 
-    def __init__(self, name, token):
-        if DEBUG:
-            print('Initializing PixelPusher')
-        self.name = name or 'PixelPusher'
-        self.start(token)
-    def start(self, DISCORD_TOKEN):
-        self.client = discord.Client(intents=discord.Intents.default())
-        self.client.run(DISCORD_TOKEN)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.commands = cmd.commands()
 
+    async def on_ready(self):
+        print('Logged in as')
+        print(self.user.name)
+        print(self.user.id)
+        print('------')
 
     async def on_message(self, message):
-        if DEBUG:
-            print('We have received a message from {0.author}: {0.content}'.format(message))
-        if message.content.startswith in cmd.commands:
-            await commands.execute(message.content, message)
+        if message.author == self.user:
+            return "pain"
 
+        if message.content in self.commands.commands:
+            await self.send_message(message.channel, self.commands.commands[message.content]())
+            print("Command executed: " + message.content)
+
+    def send_message(self, channel, message):
+        return channel.send(message)
 
 if __name__ == '__main__':
-    PixelPusher = DiscordBot('PixelPusher', DISCORD_TOKEN)
+    intends = discord.Intents.default()
+    intends.message_content = True
+    PixelPusher = DiscordBot(intents=intends)
+    PixelPusher.run(str(DISCORD_TOKEN))

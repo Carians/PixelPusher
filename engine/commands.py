@@ -1,13 +1,12 @@
 class commands:
-    def __init__(self):
-        self.commands = {}
+    def __init__(self, *args, **kwargs):
+        self.commands = {
+            '/pixelImage': self.pixelImage,
+            '/pixelCommands': self.pixelCommands,
+        }
 
-    def execute(self, command, message):
-        if command in self.commands:
-            self.commands[command](message)
-        else:
-            print('Command not found')
+    def pixelImage(self, *args, **kwargs):
+        return 'https://media.tenor.com/GBdIH5sL4XQAAAAM/the-rock-rock.gif'
 
-    def register(self, command, function):
-        self.commands[command] = function
-        self.commands.add(command)
+    def pixelCommands(self):
+        return 'PixelBot commands are: ' + ', '.join(self.commands.keys())
